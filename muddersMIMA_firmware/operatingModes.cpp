@@ -227,7 +227,6 @@ void mode_INWORK_PHEV_mudder(void)
 //Provides assist by adding demand on top of the OEM IMA strategy
 //Uses the OEM regen strategy
 //Fully automatic operation (No joystick required)
-//Need to disable this mode below 15%SOC once SPI communication to LIBCM exists.
 
 void mode_proportional_auto_assist(void)
 {
