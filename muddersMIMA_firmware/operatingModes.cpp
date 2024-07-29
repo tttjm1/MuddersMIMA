@@ -238,11 +238,11 @@ void mode_proportional_auto_assist(void)
 
 	if (latestVehicleMPH > maxmph) {latestVehicleMPH = 1;}  //safeguard
 	
-	if 	(ecm_getMAMODE1_state() == MAMODE1_STATE_IS_ASSIST) 	{ mcm_setAllSignals(MAMODE1_STATE_IS_ASSIST, (50+(sqrt(latestVehicleMPH)*TPS_percent*Boost/100))); }		
-	else if	(ecm_getMAMODE1_state() == MAMODE1_STATE_IS_IDLE)   	{ mcm_setAllSignals(MAMODE1_STATE_IS_ASSIST, (50+(sqrt(latestVehicleMPH)*TPS_percent*Cruise/100))); }
+	if 	(ecm_getMAMODE1_state() == MAMODE1_STATE_IS_ASSIST) 	{ mcm_setAllSignals(MAMODE1_STATE_IS_ASSIST, (50+(sqrt(latestVehicleMPH)*sqrt(TPS_percent)/10*Boost))); }
+	else if	(ecm_getMAMODE1_state() == MAMODE1_STATE_IS_IDLE)   	{ mcm_setAllSignals(MAMODE1_STATE_IS_ASSIST, (50+(sqrt(latestVehicleMPH)*sqrt(TPS_percent)/10*Cruise))); }
 	else if	((ecm_getMAMODE1_state() == MAMODE1_STATE_IS_REGEN) &&  
-		(gpio_getBrakePosition_bool() == BRAKE_LIGHTS_ARE_OFF)) { mcm_setAllSignals(MAMODE1_STATE_IS_REGEN, (ECM_CMDPWR_percent*Coast/10)); }
-	else if	(gpio_getBrakePosition_bool() == BRAKE_LIGHTS_ARE_ON)  	{ mcm_setAllSignals(MAMODE1_STATE_IS_REGEN, (50-(sqrt(latestVehicleMPH)*Brake/10))); }
+		(gpio_getBrakePosition_bool() == BRAKE_LIGHTS_ARE_OFF)) { mcm_setAllSignals(MAMODE1_STATE_IS_REGEN, (50+(sqrt(latestVehicleMPH)*sqrt(TPS_percent)/10*Cruise)-(sqrt(latestVehicleMPH)*Coast/10))); }
+	else if	(gpio_getBrakePosition_bool() == BRAKE_LIGHTS_ARE_ON)  	{ mcm_setAllSignals(MAMODE1_STATE_IS_REGEN, (50-(sqrt(latestVehicleMPH)*Brake/4))); }
 	else /* (ECM requesting everyting else) */                	{ mcm_passUnmodifiedSignals_fromECM(); } 				
 
 }
