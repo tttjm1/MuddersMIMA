@@ -236,7 +236,7 @@ void mode_proportional_auto_assist(void)
 	uint8_t TPS_percent = adc_getECM_TPS_percent()-tpsoffset; 
 	uint8_t MAP_sensor = adc_getECM_MAP_percent(); 
 	uint16_t latestVehicleRPM = engineSignals_getLatestRPM();
-	uint8_t regen_demand = 50-(sqrt(latestVehicleRPM)*sqrt(latestVehicleMPH)/regenfactor);
+	uint8_t regen_demand = 50-(sqrt(latestVehicleRPM-minrpm)*sqrt(latestVehicleMPH)/regenfactor);
 	uint8_t regen_max = max(10,regen_demand);
 		
 	if (latestVehicleMPH > maxmph) {latestVehicleMPH = 1;}  //safeguard
