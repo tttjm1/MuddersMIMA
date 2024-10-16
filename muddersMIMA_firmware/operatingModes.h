@@ -8,6 +8,7 @@
 	#define	 maxmph 112	// maximum MPH safeguard
 	#define  regenfactor 10	// regen power level
 	#define  assistfactor 5	// assist power level
+	#define  minrpm 250  // reduces effect of regen at low engine speed.
 
 	void operatingModes_handler(void);
 
