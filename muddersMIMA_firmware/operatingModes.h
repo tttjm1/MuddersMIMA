@@ -6,8 +6,8 @@
 	
 	#define	 tpsoffset 9 	// throttle position offset at zero
 	#define	 maxmph 112	// maximum MPH safeguard
-	#define  regenfactor 10	// regen power level
-	#define  assistfactor 5	// assist power level
+	#define  regenfactor 11	// regen power level (inverse)
+	#define  assistfactor 5	// assist power level (inverse)
 	#define  minrpm 250  // reduces effect of regen at low engine speed.
 
 	void operatingModes_handler(void);
