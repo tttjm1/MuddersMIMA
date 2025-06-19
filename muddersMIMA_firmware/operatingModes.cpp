@@ -6,6 +6,7 @@
 
 uint8_t joystick_percent_stored = JOYSTICK_NEUTRAL_NOM_PERCENT;
 bool useStoredJoystickValue = NO; //JTS2doLater: I'm not convinced this is required
+uint8_t previous_assist = 50;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -238,16 +239,20 @@ void mode_proportional_auto_assist(void)
 	uint16_t latestVehicleRPM = engineSignals_getLatestRPM();
 	uint8_t regen_demand = 50-(sqrt(latestVehicleRPM-minrpm)*sqrt(latestVehicleMPH)/regenfactor);
 	uint8_t regen_max = max(10,regen_demand);
+	uint8_t assist = (50+(sqrt(latestVehicleMPH)*sqrt(TPS_percent)*sqrt(MAP_sensor)/assistfactor));
+
+     if      (assist > previous_assist) { assist = previous_assist + 1; }
+     previous_assist = assist;
 		
 	if (latestVehicleMPH > maxmph) {latestVehicleMPH = 1;}  //safeguard
 	
-		if 	(ecm_getMAMODE1_state() == MAMODE1_STATE_IS_ASSIST) 	{ mcm_setAllSignals(MAMODE1_STATE_IS_ASSIST, (50+(sqrt(latestVehicleMPH)*sqrt(TPS_percent)*sqrt(MAP_sensor)/assistfactor))); }
-		else if	(ecm_getMAMODE1_state() == MAMODE1_STATE_IS_IDLE)   	{ mcm_setAllSignals(MAMODE1_STATE_IS_ASSIST, (50+(sqrt(latestVehicleMPH)*sqrt(TPS_percent)*sqrt(MAP_sensor)/assistfactor))); }
+		if 		(ecm_getMAMODE1_state() == MAMODE1_STATE_IS_ASSIST) 	{ mcm_setAllSignals(MAMODE1_STATE_IS_ASSIST, assist); }
+		else if	(ecm_getMAMODE1_state() == MAMODE1_STATE_IS_IDLE)   	{ mcm_setAllSignals(MAMODE1_STATE_IS_ASSIST, assist); }
 		else if	((ecm_getMAMODE1_state() == MAMODE1_STATE_IS_REGEN) &&  
-			(gpio_getBrakePosition_bool() == BRAKE_LIGHTS_ARE_OFF)) { mcm_setAllSignals(MAMODE1_STATE_IS_ASSIST, 50); }
+				(gpio_getBrakePosition_bool() == BRAKE_LIGHTS_ARE_OFF)) { mcm_setAllSignals(MAMODE1_STATE_IS_ASSIST, 50); }
 		else if	((ecm_getMAMODE1_state() == MAMODE1_STATE_IS_REGEN) && 
 		        (gpio_getBrakePosition_bool() == BRAKE_LIGHTS_ARE_ON))	{ mcm_setAllSignals(MAMODE1_STATE_IS_REGEN, regen_max); }
-		else /* (ECM requesting everyting else) */                	{ mcm_passUnmodifiedSignals_fromECM(); } 				
+		else /* (ECM requesting everyting else) */                		{ mcm_passUnmodifiedSignals_fromECM(); } 				
 
 }
 
