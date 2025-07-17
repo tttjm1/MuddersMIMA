@@ -241,7 +241,8 @@ void mode_proportional_auto_assist(void)
 	uint8_t regen_max = max(10,regen_demand);
 	uint8_t assist = (50+(sqrt(latestVehicleMPH)*sqrt(TPS_percent)*sqrt(MAP_sensor)/assistfactor));
 
-     if      (assist > previous_assist) { assist = previous_assist + 1; }
+     if      	(assist > previous_assist) { assist = previous_assist + 1; }	//prevents p1440 caused by rapid increase of assist demand
+     else if    (assist < previous_assist) { assist = previous_assist - 1; } 	//prevents p1440 caused by rapid decrease of assist demand
      previous_assist = assist;
 		
 	if (latestVehicleMPH > maxmph) {latestVehicleMPH = 1;}  //safeguard
