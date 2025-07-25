@@ -238,8 +238,9 @@ void mode_proportional_auto_assist(void)
 	uint8_t MAP_sensor = adc_getECM_MAP_percent(); 
 	uint16_t latestVehicleRPM = engineSignals_getLatestRPM();
 	uint8_t regen_demand = 50-(sqrt(latestVehicleRPM-minrpm)*sqrt(latestVehicleMPH)/regenfactor);
-	uint8_t regen_max = max(10,regen_demand);
-	uint8_t assist = (50+(sqrt(latestVehicleMPH)*sqrt(TPS_percent)*sqrt(MAP_sensor)/assistfactor));
+	uint8_t regen = max(10,regen_demand);
+	uint8_t assist_demand = (50+(sqrt(latestVehicleMPH)*sqrt(TPS_percent)*sqrt(MAP_sensor)/assistfactor));
+	uint8_t assist = min(90,assist_demand);
 
      if      	(assist > previous_assist) { assist = previous_assist + 1; }	//prevents p1440 caused by rapid increase of assist demand
      else if    (assist < previous_assist) { assist = previous_assist - 1; } 	//prevents p1440 caused by rapid decrease of assist demand
@@ -252,7 +253,7 @@ void mode_proportional_auto_assist(void)
 		else if	((ecm_getMAMODE1_state() == MAMODE1_STATE_IS_REGEN) &&  
 				(gpio_getBrakePosition_bool() == BRAKE_LIGHTS_ARE_OFF)) { mcm_setAllSignals(MAMODE1_STATE_IS_ASSIST, 50); }
 		else if	((ecm_getMAMODE1_state() == MAMODE1_STATE_IS_REGEN) && 
-		        (gpio_getBrakePosition_bool() == BRAKE_LIGHTS_ARE_ON))	{ mcm_setAllSignals(MAMODE1_STATE_IS_REGEN, regen_max); }
+		        (gpio_getBrakePosition_bool() == BRAKE_LIGHTS_ARE_ON))	{ mcm_setAllSignals(MAMODE1_STATE_IS_REGEN, regen); }
 		else /* (ECM requesting everyting else) */                		{ mcm_passUnmodifiedSignals_fromECM(); } 				
 
 }
